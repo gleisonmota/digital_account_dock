@@ -29,13 +29,15 @@ Regulação obrigatória
     A conta digital Dock nunca poderá ter o saldo negativo
 
 CAMPOS:
-    id (conta)
+    id 
+    conta
     agencia
     cpf
     portador
-    status_conta (ativa, bloqueada, desativada)
+    status_conta 
     saldo
     limite
-    saque (Não pode deixar a conta negativada)
-    tipo_transacao (deposito, saque)
+    saque 
+    tipo_transacao 
     data_transacao
+    data_aberta_conta
