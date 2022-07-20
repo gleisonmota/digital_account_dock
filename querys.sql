@@ -1,6 +1,6 @@
 
-select * from transacoes
--- select * from contas
+-- select * from transacoes
+select * from contas
 -- ORDER BY conta ASC
 
 
