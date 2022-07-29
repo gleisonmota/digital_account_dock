@@ -1,7 +1,13 @@
+-- select * from transacoes
 
-select * from transacoes
+select * from contas
 
--- select * from contas
+-- UPDATE contas SET saldo = 1000, limite = 2000
+--                 WHERE conta = '3'
+
+-- delete from transacoes
+-- where id = '10'
+
 -- ORDER BY conta ASC
 
 
@@ -14,9 +20,6 @@ select * from transacoes
 -- saldo INTEGER default 0,
 -- limite INTEGER default 2000,
 -- data_abertura_conta TIMESTAMP
--- --saque INTEGER DEFAULT 0,
--- --deposito INTEGER DEFAULT 0,
--- --tipo_transacao VARCHAR(20),
 -- )
 
 -- INSERT INTO contas(agencia, cpf, portador, status_conta, saldo, limite, data_abertura_conta)
