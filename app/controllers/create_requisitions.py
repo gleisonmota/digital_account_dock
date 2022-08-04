@@ -3,6 +3,8 @@ from app.repositories.connection_db import ConnectionDb
 from app.templates.http_status_codes import HTTP_404_NOT_FOUND
 from app.templates.http_status_codes import HTTP_405_METHOD_NOT_ALLOWED
 from app.validators.validator_docbr import Validator_docbr
+from app.validators.error_response import ErrorResponse
+from http import HTTPStatus
 from datetime import datetime
 import sys
 import os
@@ -27,8 +29,8 @@ blueprint = Blueprint("create_requisitions", __name__)
 @blueprint.route("/contas", methods=["POST"])
 def create_account():
     date_now = datetime.today()
-    DATA_TRANSACAO = [date_now.strftime('%Y-%m-%d %H:%M:%S')]
-    limite = 2000
+    transaction_date = [date_now.strftime('%Y-%m-%d %H:%M:%S')]
+    limit = 2000
     conn = connection.postgre_sql()
     try:
         sql = """select cpf from contas
@@ -37,13 +39,19 @@ def create_account():
         data = conn.fetchone()
 
         if data != None:  # verifica se já consta o cpf
-            return Response(json.dumps({"mensagem": "CPF ja consta na base de dados"}))
+            error_response = ErrorResponse(
+                "CPF ja consta na base de dados", HTTPStatus.BAD_REQUEST)
+            return error_response.__handler_response__()
 
-        if request.json["limite"] > limite:  # limite máximo de 2.000
-            return Response(json.dumps({"mensagem": "Limite nao liberado, maximo de R$ 2000"}))
+        if request.json["limite"] > limit:  # limite máximo de 2.000
+            error_response = ErrorResponse(
+                "Limite nao liberado, maximo de R$ 2000", HTTPStatus.BAD_REQUEST)
+            return error_response.__handler_response__()
 
         if len(request.json["cpf"]) != 11:
-            return Response(json.dumps({"mensagem": "cpf com numeros de caracteres incorretos"}))
+            error_response = ErrorResponse(
+                "cpf com numeros de caracteres incorretos", HTTPStatus.BAD_REQUEST)
+            return error_response.__handler_response__()
 
         # if Validator_docbr().cpf(10)
         # valida cpf
@@ -56,7 +64,7 @@ def create_account():
                 request.json["portador"],
                 request.json["status_conta"],
                 request.json["limite"],
-                DATA_TRANSACAO[0]
+                transaction_date[0]
             )
             conn.execute(sql)
             conn.connection.commit()
@@ -64,8 +72,11 @@ def create_account():
 
     except Exception as e:
         if e.args[0] == 'CPF inválido.':
-            return Response(json.dumps({"mensagem": "CPF invalido"}))
-        return Response(json.dumps({"mensagem": "Error"}))
+            error_response = ErrorResponse(
+                "CPF invalido", HTTPStatus.BAD_REQUEST)
+            return error_response.__handler_response__()
+    error_response = ErrorResponse("Error", HTTPStatus.BAD_REQUEST)
+    return error_response.__handler_response__()
 
 
 @blueprint.app_errorhandler(HTTP_404_NOT_FOUND)
@@ -74,5 +85,5 @@ def handle_404_error(_error):
 
 
 @blueprint.app_errorhandler(HTTP_405_METHOD_NOT_ALLOWED)
-def handle_404_error(_error):
+def handle_405_error(_error):
     return make_response(json.dumps({"error": "Method not allowed for the requested url"}), HTTP_405_METHOD_NOT_ALLOWED)

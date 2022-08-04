@@ -3,6 +3,8 @@ from flask import Blueprint, Response, make_response
 from app.repositories.connection_db import ConnectionDb
 from app.templates.http_status_codes import HTTP_404_NOT_FOUND
 from app.templates.http_status_codes import HTTP_405_METHOD_NOT_ALLOWED
+from app.validators.error_response import ErrorResponse
+from http import HTTPStatus
 import sys
 import os
 import json
@@ -59,7 +61,9 @@ def get_all_accounts():
         return Response(json.dumps(accounts))
 
     except Exception as e:
-        return Response(json.dumps({"mensagem": "Error"}))
+        error_response = ErrorResponse(
+        "Error", HTTPStatus.BAD_REQUEST)
+        return error_response.__handler_response__()
 
 
 @blueprint.route("/contas/<conta>", methods=["GET"])
@@ -86,10 +90,14 @@ def get_account(conta):
 
             return Response(json.dumps(account))
         else:
-            return Response(json.dumps({"mensagem": "Conta nao encontrada"}))
+            error_response = ErrorResponse(
+            "Conta não encontrada", HTTPStatus.BAD_REQUEST)
+            return error_response.__handler_response__()
 
     except Exception as e:
-        return Response(json.dumps({"mensagem": "Error"}))
+        error_response = ErrorResponse(
+        "Error", HTTPStatus.BAD_REQUEST)
+        return error_response.__handler_response__()
 
 
 @blueprint.app_errorhandler(HTTP_404_NOT_FOUND)
@@ -98,5 +106,5 @@ def handle_404_error(_error):
 
 
 @blueprint.app_errorhandler(HTTP_405_METHOD_NOT_ALLOWED)
-def handle_404_error(_error):
+def handle_405_error(_error):
     return make_response(json.dumps({"error": "Method not allowed for the requested url"}), HTTP_405_METHOD_NOT_ALLOWED)
