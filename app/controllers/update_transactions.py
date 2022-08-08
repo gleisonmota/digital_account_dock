@@ -85,7 +85,7 @@ def withdrawal_transaction(conta):
                         request.json["valor_saque"]
                     limit = data['limite'][0]
 
-        if Validator_docbr(str(request.json["cpf"]).zfill(11).replace('.0', ''), 'cpf'):
+        if Validator_docbr(request.json["cpf"], 'cpf'):
             sql_transacoes = """
                 UPDATE contas SET saldo = {}, limite = {}
                 WHERE conta = '{}'
@@ -115,10 +115,9 @@ def withdrawal_transaction(conta):
             return Response(json.dumps({"mensagem": "transacao efetuada"}))
 
     except Exception as e:
-        if e.args[0] == 'CPF inválido.':
-            error_response = ErrorResponse(
-                "CPF invalido", HTTPStatus.BAD_REQUEST)
-            return error_response.__handler_response__()
+        error_response = ErrorResponse(
+            e.args[0], HTTPStatus.BAD_REQUEST)
+        return error_response.__handler_response__()
     error_response = ErrorResponse("Error", HTTPStatus.BAD_REQUEST)
     return error_response.__handler_response__()
 
@@ -157,7 +156,7 @@ def deposit_transaction(conta):
             limit = data['limite'][0]
 
         # valida cpf
-        if Validator_docbr(str(request.json["cpf"]).zfill(11).replace('.0', ''), 'cpf'):
+        if Validator_docbr(request.json["cpf"], 'cpf'):
             sql_transacoes = """
                 UPDATE contas SET saldo = '{}', limite = '{}'
                 WHERE conta = '{}'
@@ -187,10 +186,9 @@ def deposit_transaction(conta):
             return Response(json.dumps({"mensagem": "transacao efetuada"}))
 
     except Exception as e:
-        if e.args[0] == 'CPF inválido.':
-            error_response = ErrorResponse(
-                "CPF invalido", HTTPStatus.BAD_REQUEST)
-            return error_response.__handler_response__()
+        error_response = ErrorResponse(
+            e.args[0], HTTPStatus.BAD_REQUEST)
+        return error_response.__handler_response__()
     error_response = ErrorResponse("Error", HTTPStatus.BAD_REQUEST)
     return error_response.__handler_response__()
 

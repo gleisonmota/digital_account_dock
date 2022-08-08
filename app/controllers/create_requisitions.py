@@ -48,14 +48,7 @@ def create_account():
                 "Limite nao liberado, maximo de R$ 2000", HTTPStatus.BAD_REQUEST)
             return error_response.__handler_response__()
 
-        if len(request.json["cpf"]) != 11:
-            error_response = ErrorResponse(
-                "cpf com numeros de caracteres incorretos", HTTPStatus.BAD_REQUEST)
-            return error_response.__handler_response__()
-
-        # if Validator_docbr().cpf(10)
-        # valida cpf
-        if Validator_docbr(str(request.json["cpf"]).zfill(11).replace('.0', ''), 'cpf'):
+        if Validator_docbr(request.json["cpf"], 'cpf'):
             sql = """
                 INSERT INTO contas (agencia, cpf, portador, status_conta, limite, data_abertura_conta)
                 VALUES ('{}', '{}', '{}', '{}', {}, '{}')""".format(
@@ -71,10 +64,9 @@ def create_account():
             return Response(json.dumps({"mensagem": "Conta registrada"}))
 
     except Exception as e:
-        if e.args[0] == 'CPF inválido.':
-            error_response = ErrorResponse(
-                "CPF invalido", HTTPStatus.BAD_REQUEST)
-            return error_response.__handler_response__()
+        error_response = ErrorResponse(
+            e.args[0], HTTPStatus.BAD_REQUEST)
+        return error_response.__handler_response__()
     error_response = ErrorResponse("Error", HTTPStatus.BAD_REQUEST)
     return error_response.__handler_response__()
 

@@ -2,8 +2,8 @@
 
 select * from contas
 
--- UPDATE contas SET saldo = 1000, limite = 2000
---                 WHERE conta = '3'
+-- UPDATE contas SET limite = 500
+--                 WHERE conta = '4'
 
 -- delete from transacoes
 -- where id = '10'
@@ -11,7 +11,7 @@ select * from contas
 -- ORDER BY conta ASC
 
 
--- ----------TABLE contas
+----------TABLE contas
 -- CREATE TABLE contas(conta SERIAL PRIMARY KEY, 
 -- agencia VARCHAR(10),
 -- cpf VARCHAR(11),
